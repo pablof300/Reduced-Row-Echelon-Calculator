@@ -16,15 +16,12 @@ class Matrix(object):
     def getRows(lines):
         # Use an array of Rows or use a 2D array?
         matrixRows = []
-        updatedLines = [for newLine.replace(" ", "") in lines]
+        updatedLines = [newLine.replace(" ", "") for newLine in lines]
         for line in lines:
             rowElements = []
             elements = line.split(",")
-            try:
-                for index in range(0, len(elements)):
-                    rowElements[index] = int(elements[index])
-            except:
-                return None;
+            for index in range(0, len(elements)):
+                rowElements[index] = int(elements[index])
 
     def toString(self):
         if not isValid(self):
@@ -33,15 +30,37 @@ class Matrix(object):
             print row.values
 
     def isValid(self):
-        if self.rows is None:
-            return False;
-        return True;
+        pass
 
+
+def printSpacers():
+    print " " * 3
+
+def isValidRowString(rowString):
+    if "," not in rowString:
+        return False
+    elements = rowString.split(",")
+    try:
+        for index in range(0, len(elements)):
+            int(elements[index])
+    except:
+            return False
+    return True
+
+printSpacers()
 print "Please type a rectangular matrix row by row."
 print "If the first row contains a [1, 2, 3] (left-to-right), then type 1,2,3"
 print "Once you type the last line, press enter twice!"
+printSpacers()
 
-
+currentLine = 0;
+lines = []
 while(True):
-
+    line = raw_input("Row %d> " %(currentLine + 1)
+    if isValidRowString(line):
+        lines.append(line)
+        currentLine += 1
+    else:
+        print "Please type row %d correctly, or double press enter to finish typing the matrix"
+                     
 
