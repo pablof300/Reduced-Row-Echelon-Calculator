@@ -56,7 +56,7 @@ printSpacers()
 currentLine = 0;
 lines = []
 while(True):
-    line = raw_input("Row %d> " %(currentLine + 1)
+    line = raw_input("Row %d> " %(currentLine + 1))
     if isValidRowString(line):
         lines.append(line)
         currentLine += 1
