@@ -15,13 +15,12 @@ class Matrix(object):
         self.toReducedRowEchelonMatrix()
 
     def toReducedRowEchelonMatrix(self):
-        self.normalizeAll
+        self.normalizeAll()
         pivotDictionary = self.getPivotColDictionary()
+        self.printMatrix()
         if self.arePivotColumnsRepeated(pivotDictionary):
             self.rows = self.getRowsWithUniquePivots(pivotDictionary)
             self.toReducedRowEchelonMatrix()
-        else:
-            print self.toString
 
     def getRows(self, lines):
         # Use an array of Rows or use a 2D array?
@@ -31,12 +30,12 @@ class Matrix(object):
             rowElements = []
             elements = line.split(",")
             for index in range(0, len(elements)):
-                rowElements[index] = int(elements[index])
+                rowElements.append(int(elements[index]))
+            matrixRows.append(Row(rowElements))
+        return matrixRows
 
-    def toString(self):
-        if not isValid(self):
-            return "Not valid matrix (not rectangular)"
-        for row in rows:
+    def printMatrix(self):
+        for row in self.rows:
             print row.values
     
     # Returns true if matrix is rectangular
@@ -49,7 +48,7 @@ class Matrix(object):
 
     def arePivotColumnsRepeated(self, pivotDictionary):
         for pivotCol in pivotDictionary.keys():
-            if lens(pivotDictionary[pivotCol]) > 1:
+            if len(pivotDictionary[pivotCol]) > 1:
                 return True
         return False
 
@@ -60,23 +59,27 @@ class Matrix(object):
         return None
 
     def findLeadingNumber(self, row):
-        if findLeadingColumn(row) is None:
+        leadingCol = self.findLeadingColumn(row)
+        if leadingCol is None:
             return None
-        return row.values[findLeadingColumn(row)]
+        return row.values[leadingCol]
 
-    def normalizeAll(self, row):
-        for row in self.rows:
-            self.normalize(row)
+    def normalizeAll(self):
+        for rowIndex in range(0, len(self.rows)):
+            self.normalize(rowIndex)
 
-    def normalize(self, row):
-        multiplicationFactor = (1.0) / (findLeadingNumber(row))
-        for value in row.values:
-            value *= multiplicationFactor
+    def normalize(self, rowIndex):
+        normalizedRowValues = []
+        currentRow = self.rows[rowIndex]
+        multiplicationFactor = (1.0) / (self.findLeadingNumber(currentRow))
+        for valueIndex in range(0, len(currentRow.values)):
+            normalizedRowValues.append(currentRow.values[valueIndex] * multiplicationFactor)
+        self.rows[rowIndex] = Row(normalizedRowValues)
 
     def getPivotColDictionary(self):
         pivotDictionary = {}
         for row in self.rows:
-            pivotCol = findLeadingColumn(row)
+            pivotCol = self.findLeadingColumn(row)
             if not pivotCol in pivotDictionary:
                 pivotDictionary[pivotCol] = []
             pivotDictionary[pivotCol].append(row)
@@ -101,15 +104,18 @@ class Matrix(object):
 
     def getRowsWithUniquePivots(self, pivotDictionary):
         updatedRows = []
+        print "Pivot dictionary is %r " %pivotDictionary
         for pivotCol in pivotDictionary.keys():
             rowArray = pivotDictionary[pivotCol]
             mainRow = rowArray[0]
-            for rowIndex in range(1, len(rowArray)):
-                updatedRow = []
-                for colIndex in range(0, len(rowArray[rowIndex])):
-                    updatedRow[colIndex] = updatedRow[colIndex] - mainRow[colIndex]
-                updatedRows.append(Row(updatedRow))
             updatedRows.append(mainRow)
+            for rowIndex in range(1, len(rowArray)):
+                currentRowValues = rowArray[rowIndex].values
+                print "Iterating in row %r " %currentRowValues
+                updatedRow = []
+                for colIndex in range(0, len(rowArray[rowIndex].values)):
+                    updatedRow.append(currentRowValues[colIndex] - mainRow.values[colIndex])
+                updatedRows.append(Row(updatedRow))
         return updatedRows
 
     def fromRowEchelonToReducedRowEchelon(self):
@@ -156,7 +162,7 @@ def isEmpty(rowString):
 
 def getReducedRowEchelonMatrix(lines):
     matrix = Matrix(lines)
-    return matrix.toString
+    return "matrix.toString"
 
 
 
