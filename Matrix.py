@@ -17,10 +17,12 @@ class Matrix(object):
     def toReducedRowEchelonMatrix(self):
         self.normalizeAll()
         pivotDictionary = self.getPivotColDictionary()
-        self.printMatrix()
         if self.arePivotColumnsRepeated(pivotDictionary):
             self.rows = self.getRowsWithUniquePivots(pivotDictionary)
             self.toReducedRowEchelonMatrix()
+        else:
+            self.fromRowEchelonToReducedRowEchelon()
+            
 
     def getRows(self, lines):
         # Use an array of Rows or use a 2D array?
@@ -37,6 +39,7 @@ class Matrix(object):
     def printMatrix(self):
         for row in self.rows:
             print row.values
+        print "\n"
     
     # Returns true if matrix is rectangular
     # Returns true if all rows are of the same length (rectangular)
@@ -104,14 +107,12 @@ class Matrix(object):
 
     def getRowsWithUniquePivots(self, pivotDictionary):
         updatedRows = []
-        print "Pivot dictionary is %r " %pivotDictionary
         for pivotCol in pivotDictionary.keys():
             rowArray = pivotDictionary[pivotCol]
             mainRow = rowArray[0]
             updatedRows.append(mainRow)
             for rowIndex in range(1, len(rowArray)):
                 currentRowValues = rowArray[rowIndex].values
-                print "Iterating in row %r " %currentRowValues
                 updatedRow = []
                 for colIndex in range(0, len(rowArray[rowIndex].values)):
                     updatedRow.append(currentRowValues[colIndex] - mainRow.values[colIndex])
@@ -119,24 +120,20 @@ class Matrix(object):
         return updatedRows
 
     def fromRowEchelonToReducedRowEchelon(self):
-        for rowIndex in range(1,lens(self.rows)):
+        for rowIndex in range(1,len(self.rows)):
             leadingCol = self.findLeadingColumn(self.rows[0])
             for i in range((rowIndex - 1),-1,-1):
                 if self.rows[i].values[leadingCol] != 0:
-                    self.rows[i] = zerofy(self.rows[i], self.rows[rowIndex], leadingCol)
+                    self.rows[i] = self.zerofy(self.rows[i], self.rows[rowIndex], leadingCol)
 
     def zerofy(self, targetRow, toolRow, targetCol):
         targetRowValues = targetRow.values
         toolRowValues = toolRow.values
         zerofiedRow = []
         factor = toolRowValues[targetCol]
-        for col in range(0, lens(targetRowValues)):
-            zerofiedRow.append(targetRowValues[col] - (factor * toolRowValues[col]))
-        return zerofiedRow
-
-
-
-
+        for col in range(0, len(targetRowValues)):
+            zerofiedRow.append(long(targetRowValues[col]) - (long(factor) * toolRowValues[col]))
+        return Row(zerofiedRow)
 
 # Main program methods
 
@@ -161,8 +158,7 @@ def isEmpty(rowString):
     return False;
 
 def getReducedRowEchelonMatrix(lines):
-    matrix = Matrix(lines)
-    return "matrix.toString"
+    return Matrix(lines)
 
 
 
@@ -180,8 +176,8 @@ def askUserForMatrix():
     emptyLines = 0;
     lines = []
     
-    lines = ["3,-1,7","2,3,1"]
-    getReducedRowEchelonMatrix(lines)#
+    #lines = ["3,-1,7","2,3,1"]
+    #getReducedRowEchelonMatrix(lines)#
     
     while(True):
         line = raw_input("Row %d> " %(currentLine + 1))
@@ -189,11 +185,8 @@ def askUserForMatrix():
             
             # The player has pressed double entered and finished typing his matrix
             if emptyLines >= 1:
-                #if Matrix(lines).isRectangular():
-                #    print getReducedRowEchelonMatrix(lines)
-                #else:
-                #    askUserForMatrix()
-                    break
+                getReducedRowEchelonMatrix(lines).printMatrix()
+                break
             
             emptyLines += 1
             continue
