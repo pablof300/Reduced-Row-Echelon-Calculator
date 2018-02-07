@@ -22,6 +22,7 @@ class Matrix(object):
             self.toReducedRowEchelonMatrix()
         else:
             self.fromRowEchelonToReducedRowEchelon()
+        
             
 
     def getRows(self, lines):
@@ -76,7 +77,10 @@ class Matrix(object):
         currentRow = self.rows[rowIndex]
         multiplicationFactor = (1.0) / (self.findLeadingNumber(currentRow))
         for valueIndex in range(0, len(currentRow.values)):
-            normalizedRowValues.append(currentRow.values[valueIndex] * multiplicationFactor)
+            if currentRow.values[valueIndex] == 0.0:
+                normalizedRowValues.append(0.0)
+                continue
+            normalizedRowValues.append(round(currentRow.values[valueIndex] * multiplicationFactor, 10))
         self.rows[rowIndex] = Row(normalizedRowValues)
 
     def getPivotColDictionary(self):
@@ -121,7 +125,7 @@ class Matrix(object):
 
     def fromRowEchelonToReducedRowEchelon(self):
         for rowIndex in range(1,len(self.rows)):
-            leadingCol = self.findLeadingColumn(self.rows[0])
+            leadingCol = self.findLeadingColumn(self.rows[rowIndex])
             for i in range((rowIndex - 1),-1,-1):
                 if self.rows[i].values[leadingCol] != 0:
                     self.rows[i] = self.zerofy(self.rows[i], self.rows[rowIndex], leadingCol)
@@ -130,9 +134,9 @@ class Matrix(object):
         targetRowValues = targetRow.values
         toolRowValues = toolRow.values
         zerofiedRow = []
-        factor = toolRowValues[targetCol]
+        factor = targetRowValues[targetCol]
         for col in range(0, len(targetRowValues)):
-            zerofiedRow.append(long(targetRowValues[col]) - (long(factor) * toolRowValues[col]))
+            zerofiedRow.append(float(targetRowValues[col]) - (float(factor) * toolRowValues[col]))
         return Row(zerofiedRow)
 
 # Main program methods
