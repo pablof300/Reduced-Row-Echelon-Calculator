@@ -8,6 +8,13 @@ class Row(object):
     def __init__(self, values):
         self.values = values
         self.size = len(self.values)
+        self.isEmpty = self.isEmpty()
+
+    def isEmpty(self):
+        for value in self.values:
+            if value != 0:
+                return False
+        return True
 
 class Matrix(object):
     def __init__(self, lines):
@@ -38,6 +45,7 @@ class Matrix(object):
         return matrixRows
 
     def printMatrix(self):
+        print "Matrix result:"
         for row in self.rows:
             print row.values
         print "\n"
@@ -52,6 +60,8 @@ class Matrix(object):
 
     def arePivotColumnsRepeated(self, pivotDictionary):
         for pivotCol in pivotDictionary.keys():
+            if pivotCol == -1:
+                continue
             if len(pivotDictionary[pivotCol]) > 1:
                 return True
         return False
@@ -60,16 +70,16 @@ class Matrix(object):
         for index in range(0, len(row.values)):
             if row.values[index] != 0:
                 return index
-        return None
+        return -1
 
     def findLeadingNumber(self, row):
         leadingCol = self.findLeadingColumn(row)
-        if leadingCol is None:
-            return None
         return row.values[leadingCol]
 
     def normalizeAll(self):
         for rowIndex in range(0, len(self.rows)):
+            if self.rows[rowIndex].isEmpty:
+                continue
             self.normalize(rowIndex)
 
     def normalize(self, rowIndex):
@@ -96,7 +106,7 @@ class Matrix(object):
         sorted = intArray[:]
         for i in range(0, len(sorted)):
             for j in range(i + 1, len(sorted)):
-                if(sorted[i] > sorted[j] and i != j):
+                if (sorted[i] > sorted[j] and i != j) or sorted[j] < 0:
                     temp = sorted[j]
                     sorted[j] = sorted[i]
                     sorted[i] = temp
@@ -125,6 +135,8 @@ class Matrix(object):
 
     def fromRowEchelonToReducedRowEchelon(self):
         for rowIndex in range(1,len(self.rows)):
+            if self.rows[rowIndex].isEmpty:
+                continue
             leadingCol = self.findLeadingColumn(self.rows[rowIndex])
             for i in range((rowIndex - 1),-1,-1):
                 if self.rows[i].values[leadingCol] != 0:
@@ -136,7 +148,7 @@ class Matrix(object):
         zerofiedRow = []
         factor = targetRowValues[targetCol]
         for col in range(0, len(targetRowValues)):
-            zerofiedRow.append(float(targetRowValues[col]) - (float(factor) * toolRowValues[col]))
+            zerofiedRow.append(round(float(targetRowValues[col]) - (float(factor) * toolRowValues[col]), 5))
         return Row(zerofiedRow)
 
 # Main program methods
@@ -179,9 +191,6 @@ def askUserForMatrix():
     currentLine = 0;
     emptyLines = 0;
     lines = []
-    
-    #lines = ["3,-1,7","2,3,1"]
-    #getReducedRowEchelonMatrix(lines)#
     
     while(True):
         line = raw_input("Row %d> " %(currentLine + 1))
