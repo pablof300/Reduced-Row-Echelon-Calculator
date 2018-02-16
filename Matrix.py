@@ -1,11 +1,6 @@
-# Is it better convention to use a size object or a tuple?
-class Size(object):
-    def __init__(self, rows, columns):
-        self.rows = rows
-        self.rows = columns
-
 class Row(object):
     def __init__(self, values):
+        """Holds an array of integers that represent a row in a matrix"""
         self.values = values
         self.size = len(self.values)
         self.isEmpty = self.isEmpty()
@@ -18,10 +13,12 @@ class Row(object):
 
 class Matrix(object):
     def __init__(self, lines):
+        """Represents a rectangular matrix to be solved using reduced row echelon"""
         self.rows = self.getRows(lines)
         self.toReducedRowEchelonMatrix()
 
     def toReducedRowEchelonMatrix(self):
+        """Transforms the matrix into a matrix in reduced row echelon form"""
         self.normalizeAll()
         pivotDictionary = self.getPivotColDictionary()
         if self.arePivotColumnsRepeated(pivotDictionary):
@@ -29,14 +26,12 @@ class Matrix(object):
             self.toReducedRowEchelonMatrix()
         else:
             self.fromRowEchelonToReducedRowEchelon()
-        
-            
 
     def getRows(self, lines):
-        # Use an array of Rows or use a 2D array?
+        """Transforms an array of Strings (which hold the rows inputted by user) into Row objects"""
         matrixRows = []
         updatedLines = [newLine.replace(" ", "") for newLine in lines]
-        for line in lines:
+        for line in updatedLines:
             rowElements = []
             elements = line.split(",")
             for index in range(0, len(elements)):
@@ -45,20 +40,21 @@ class Matrix(object):
         return matrixRows
 
     def printMatrix(self):
+        """Prints the rows in the matrix"""
         print "Matrix result:"
         for row in self.rows:
             print row.values
         print "\n"
-    
-    # Returns true if matrix is rectangular
-    # Returns true if all rows are of the same length (rectangular)
+
     def isRectangular(self):
+        """Returns true if matrix is rectangular (all rows of the same length)"""
         for rowIndex in range(1, len(self.rows)):
             if row[rowIndex].size != row[rowIndex].size:
                 return False
         return True
 
     def arePivotColumnsRepeated(self, pivotDictionary):
+        """Return true if there is another pivot variable in the same column"""
         for pivotCol in pivotDictionary.keys():
             if pivotCol == -1:
                 continue
@@ -67,22 +63,26 @@ class Matrix(object):
         return False
 
     def findLeadingColumn(self, row):
+        """Returns the column at which the pivot variable is located"""
         for index in range(0, len(row.values)):
             if row.values[index] != 0:
                 return index
         return -1
 
     def findLeadingNumber(self, row):
+        """Returns the first non-zero number in a row"""
         leadingCol = self.findLeadingColumn(row)
         return row.values[leadingCol]
 
     def normalizeAll(self):
+        """Normalizes all rows in the matrix object"""
         for rowIndex in range(0, len(self.rows)):
             if self.rows[rowIndex].isEmpty:
                 continue
             self.normalize(rowIndex)
 
     def normalize(self, rowIndex):
+        """Multiplies a row by a constant in order to obtain a leading 1. For example [3,9,9] -> [1,3,3]"""
         normalizedRowValues = []
         currentRow = self.rows[rowIndex]
         multiplicationFactor = (1.0) / (self.findLeadingNumber(currentRow))
@@ -94,6 +94,7 @@ class Matrix(object):
         self.rows[rowIndex] = Row(normalizedRowValues)
 
     def getPivotColDictionary(self):
+        """Returns a dictionary of pivot variables along with the column where they are located"""
         pivotDictionary = {}
         for row in self.rows:
             pivotCol = self.findLeadingColumn(row)
@@ -103,6 +104,7 @@ class Matrix(object):
         return pivotDictionary
 
     def sortLeastToGreatest(self, intArray):
+        """Sorts an int array from least to greatest"""
         sorted = intArray[:]
         for i in range(0, len(sorted)):
             for j in range(i + 1, len(sorted)):
@@ -113,6 +115,7 @@ class Matrix(object):
         return sorted
 
     def sortByPivotColumns(self, pivotDictionary):
+        """Sorts columns using the location of their pivot columns"""
         sortedIndexes = sortLeastToGreatest(pivotDictionary.keys())
         sortedRows = []
         for index in sortedIndexes:
@@ -120,6 +123,7 @@ class Matrix(object):
                 sortedRows.append(row)
 
     def getRowsWithUniquePivots(self, pivotDictionary):
+        """Returns rows that have a pivot variable in a column with no other pivot variables"""
         updatedRows = []
         for pivotCol in pivotDictionary.keys():
             rowArray = pivotDictionary[pivotCol]
@@ -134,6 +138,7 @@ class Matrix(object):
         return updatedRows
 
     def fromRowEchelonToReducedRowEchelon(self):
+        """Converts matrix from row echelon form to reduced row echelon form"""
         for rowIndex in range(1,len(self.rows)):
             if self.rows[rowIndex].isEmpty:
                 continue
@@ -143,6 +148,7 @@ class Matrix(object):
                     self.rows[i] = self.zerofy(self.rows[i], self.rows[rowIndex], leadingCol)
 
     def zerofy(self, targetRow, toolRow, targetCol):
+        """to-do"""
         targetRowValues = targetRow.values
         toolRowValues = toolRow.values
         zerofiedRow = []
@@ -151,13 +157,13 @@ class Matrix(object):
             zerofiedRow.append(round(float(targetRowValues[col]) - (float(factor) * toolRowValues[col]), 5))
         return Row(zerofiedRow)
 
-# Main program methods
-
 def printSpacers():
+    """Prints three empty lines"""
     for i in range(0,3):
         print " "
 
 def isValidRowString(rowString):
+    """Return if a String is a valid row input of a matrix (ex: '4,3,4,5'). The input 'cat' would return false"""
     if "," not in rowString:
         return False
     elements = rowString.split(",")
@@ -169,11 +175,13 @@ def isValidRowString(rowString):
     return True
 
 def isEmpty(rowString):
+    """Returns if the inputed String is empty"""
     if len(rowString) <= 0:
         return True
     return False;
 
 def getReducedRowEchelonMatrix(lines):
+    """Returns a Matrix object from the rows given by the array lines"""
     return Matrix(lines)
 
 
@@ -182,6 +190,8 @@ def getReducedRowEchelonMatrix(lines):
 # User will be asked to input a matrix
 
 def askUserForMatrix():
+    """Asks for user input of valid matrix rows (ex: [1,2,3,4]) and then performs reduced row echelon operations on the matrix and prints its result"""
+    
     printSpacers()
     print "Please type a rectangular matrix row by row."
     print "If the first row contains a [1, 2, 3] (left-to-right), then type 1,2,3"
@@ -210,5 +220,10 @@ def askUserForMatrix():
             emptyLines = 0
         else:
             print "Please type row %d correctly, or double press enter to finish typing the matrix"
-                     
+
+def getCommand():
+    pass
+
+
+
 askUserForMatrix()
