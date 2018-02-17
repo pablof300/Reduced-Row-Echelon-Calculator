@@ -98,32 +98,11 @@ class Matrix(object):
 
     def getPivotColDictionary(self):
         """Returns a dictionary of pivot variables along with the column where they are located"""
-        pivotDictionary = {}
+        pivotDictionary = defaultdict(list)
         for row in self.rows:
             pivotCol = self.findLeadingColumn(row)
-            if not pivotCol in pivotDictionary:
-                pivotDictionary[pivotCol] = []
             pivotDictionary[pivotCol].append(row)
         return pivotDictionary
-
-    def sortLeastToGreatest(self, intArray):
-        """Sorts an int array from least to greatest"""
-        sorted = intArray[:]
-        for i in range(0, len(sorted)):
-            for j in range(i + 1, len(sorted)):
-                if (sorted[i] > sorted[j] and i != j) or sorted[j] < 0:
-                    temp = sorted[j]
-                    sorted[j] = sorted[i]
-                    sorted[i] = temp
-        return sorted
-
-    def sortByPivotColumns(self, pivotDictionary):
-        """Sorts columns using the location of their pivot columns"""
-        sortedIndexes = sortLeastToGreatest(pivotDictionary.keys())
-        sortedRows = []
-        for index in sortedIndexes:
-            for row in pivotDictionary[index]:
-                sortedRows.append(row)
 
     def getRowsWithUniquePivots(self, pivotDictionary):
         """Returns rows that have a pivot variable in a column with no other pivot variables"""
