@@ -16,8 +16,8 @@ class Row(object):
 class Matrix(object):
     """Represents a rectangular matrix to be solved using reduced row echelon"""
     
-    def __init__(self, lines):
-        self.rows = self.getRows(lines)
+    def __init__(self, rows):
+        self.rows = rows
         self.toReducedRowEchelonMatrix()
 
     def toReducedRowEchelonMatrix(self):
@@ -29,18 +29,6 @@ class Matrix(object):
             self.toReducedRowEchelonMatrix()
         else:
             self.fromRowEchelonToReducedRowEchelon()
-
-    def getRows(self, lines):
-        """Transforms an array of Strings (which hold the rows inputted by user) into Row objects"""
-        matrix_rows = []
-        updated_lines = [newLine.replace(" ", "") for newLine in lines]
-        for line in updated_lines:
-            row_elements = []
-            elements = line.split(",")
-            for element in elements:
-                row_elements.append(int(element))
-            matrix_rows.append(Row(row_elements))
-        return matrix_rows
 
     def printMatrix(self):
         """Prints the rows in the matrix"""
@@ -161,14 +149,17 @@ def isEmpty(rowString):
         return True
     return False;
 
-def getReducedRowEchelonMatrix(lines):
-    """Returns a Matrix object from the rows given by the array lines"""
-    return Matrix(lines)
-
-
-
-# Start the program
-# User will be asked to input a matrix
+def getRows(lines):
+    """Transforms an array of Strings (which hold the rows inputted by user) into Row objects"""
+    matrix_rows = []
+    updated_lines = [newLine.replace(" ", "") for newLine in lines]
+    for line in updated_lines:
+        row_elements = []
+        elements = line.split(",")
+        for element in elements:
+            row_elements.append(int(element))
+        matrix_rows.append(Row(row_elements))
+    return matrix_rows
 
 def askUserForMatrix():
     """Asks for user input of valid matrix rows (ex: [1,2,3,4]) and then performs reduced row echelon operations on the matrix and prints its result"""
@@ -186,10 +177,8 @@ def askUserForMatrix():
     while(True):
         line = raw_input("Row %d> " %(currentLine + 1))
         if isEmpty(line):
-            
-            # The player has pressed double entered and finished typing his matrix
             if emptyLines >= 1:
-                getReducedRowEchelonMatrix(lines).printMatrix()
+                Matrix(getRows(lines)).printMatrix()
                 break
             
             emptyLines += 1
@@ -204,7 +193,6 @@ def askUserForMatrix():
 
 def getCommand():
     pass
-
 
 
 askUserForMatrix()
