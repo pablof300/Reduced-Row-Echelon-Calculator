@@ -49,11 +49,10 @@ class Matrix(object):
             print row.values
         print "\n"
 
-    # Can't remove len because starting from 1
     def isRectangular(self):
         """Returns true if matrix is rectangular (all rows of the same length)"""
-        for row_index in range(1, len(self.rows)):
-            if row[row_index].size != row[row_index - 1].size:
+        for index, row in enumerate(self.rows[1:]):
+            if row.size != self.rows[index - 1].size:
                 return False
         return True
 
@@ -66,12 +65,11 @@ class Matrix(object):
                 return True
         return False
 
-    # Can't remove len because return index
     def findLeadingColumn(self, row):
         """Returns the column at which the pivot variable is located"""
-        for index in range(0, len(row.values)):
-            if row.values[index] != 0:
-                return index
+        for index, value in enumerate(row.values):
+            if value != 0:
+                return index;
         return -1
 
     def findLeadingNumber(self, row):
@@ -105,7 +103,6 @@ class Matrix(object):
             pivot_dictionary[pivot_col].append(row)
         return pivot_dictionary
 
-    # Can't remove len because starting from 1 and comparing different arrays at a time
     def getRowsWithUniquePivots(self, pivot_dictionary):
         """Returns rows that have a pivot variable in a column with no other pivot variables"""
         updated_rows = []
@@ -113,34 +110,33 @@ class Matrix(object):
             row_array = pivot_dictionary[pivot_col]
             main_row = row_array[0]
             updated_rows.append(main_row)
-            for row_index in range(1, len(row_array)):
-                currentRowValues = row_array[row_index].values
+            for row in row_array[1:]:
+                currentRowValues = row.values
                 updated_row = []
-                for col_index in range(0, len(row_array[row_index].values)):
-                    updated_row.append(currentRowValues[col_index] - main_row.values[col_index])
+                for index, value in enumerate(row.values):
+                    updated_row.append(value - main_row.values[index])
                 updated_rows.append(Row(updated_row))
         return updated_rows
 
-    # Can't remove len because starting from 1
     def fromRowEchelonToReducedRowEchelon(self):
         """Converts matrix from row echelon form to reduced row echelon form"""
-        for row_index in range(1,len(self.rows)):
-            if self.rows[row_index].empty:
+        for index, row in enumerate(self.rows[1:]):
+            if row.empty:
                 continue
-            leading_col = self.findLeadingColumn(self.rows[row_index])
-            for i in range((row_index - 1),-1,-1):
+            leading_col = self.findLeadingColumn(row)
+            for i in range(index, -1, -1):
                 if self.rows[i].values[leading_col] != 0:
-                    self.rows[i] = self.zerofy(self.rows[i], self.rows[row_index], leading_col)
+                    self.rows[i] = self.zerofy(self.rows[i], row, leading_col)
 
-    # Can't remove len because using two arrays at a time
     def zerofy(self, target_row, tool_row, targetCol):
         """It will subtract the target_row from the tool_row in an attempt to create 0's and different pivot columns"""
         target_row_values = target_row.values
         tool_row_values = tool_row.values
         zerofied_row = []
         factor = target_row_values[targetCol]
-        for col in range(0, len(target_row_values)):
-            zerofied_row.append(round(float(target_row_values[col]) - (float(factor) * tool_row_values[col]), 5))
+        for index, target_value in enumerate(target_row_values):
+            zerofied_row.append(round(float(target_value) - (float(factor) * tool_row_values[index]), 5))
+        
         return Row(zerofied_row)
 
 def printSpacers():
