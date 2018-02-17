@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 class Row(object):
     def __init__(self, values):
         """Holds an array of integers that represent a row in a matrix"""
@@ -19,7 +21,7 @@ class Matrix(object):
 
     def toReducedRowEchelonMatrix(self):
         """Transforms the matrix into a matrix in reduced row echelon form"""
-        self.normalizeAll()
+        self.normalize()
         pivotDictionary = self.getPivotColDictionary()
         if self.arePivotColumnsRepeated(pivotDictionary):
             self.rows = self.getRowsWithUniquePivots(pivotDictionary)
@@ -34,8 +36,8 @@ class Matrix(object):
         for line in updatedLines:
             rowElements = []
             elements = line.split(",")
-            for index in range(0, len(elements)):
-                rowElements.append(int(elements[index]))
+            for element in elements:
+                rowElements.append(int(element))
             matrixRows.append(Row(rowElements))
         return matrixRows
 
@@ -46,10 +48,11 @@ class Matrix(object):
             print row.values
         print "\n"
 
+# Can't remove len because starting from 1
     def isRectangular(self):
         """Returns true if matrix is rectangular (all rows of the same length)"""
         for rowIndex in range(1, len(self.rows)):
-            if row[rowIndex].size != row[rowIndex].size:
+            if row[rowIndex].size != row[rowIndex - 1].size:
                 return False
         return True
 
@@ -62,6 +65,7 @@ class Matrix(object):
                 return True
         return False
 
+# Can't remove len because return index
     def findLeadingColumn(self, row):
         """Returns the column at which the pivot variable is located"""
         for index in range(0, len(row.values)):
@@ -74,24 +78,23 @@ class Matrix(object):
         leadingCol = self.findLeadingColumn(row)
         return row.values[leadingCol]
 
-    def normalizeAll(self):
+    def normalize(self):
         """Normalizes all rows in the matrix object"""
-        for rowIndex in range(0, len(self.rows)):
-            if self.rows[rowIndex].isEmpty:
+        for row in self.rows:
+            if row.isEmpty:
                 continue
-            self.normalize(rowIndex)
+            self.normalize_row(row)
 
-    def normalize(self, rowIndex):
+    def normalize_row(self, row):
         """Multiplies a row by a constant in order to obtain a leading 1. For example [3,9,9] -> [1,3,3]"""
-        normalizedRowValues = []
-        currentRow = self.rows[rowIndex]
-        multiplicationFactor = (1.0) / (self.findLeadingNumber(currentRow))
-        for valueIndex in range(0, len(currentRow.values)):
-            if currentRow.values[valueIndex] == 0.0:
-                normalizedRowValues.append(0.0)
+        normalized_row_values = []
+        multiplication_factor = (1.0) / (self.findLeadingNumber(row))
+        for element in row.values:
+            if element == 0.0:
+                normalized_row_values.append(0.0)
                 continue
-            normalizedRowValues.append(round(currentRow.values[valueIndex] * multiplicationFactor, 10))
-        self.rows[rowIndex] = Row(normalizedRowValues)
+            normalized_row_values.append(round(element * multiplication_factor, 10))
+        row.values = normalized_row_values
 
     def getPivotColDictionary(self):
         """Returns a dictionary of pivot variables along with the column where they are located"""
