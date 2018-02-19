@@ -194,5 +194,5 @@ def askUserForMatrix():
 def getCommand():
     pass
 
-
-askUserForMatrix()
+if __name__ == "__main__":
+    askUserForMatrix()
